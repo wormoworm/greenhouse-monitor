@@ -85,7 +85,6 @@ void setup() {
   ESP.deepSleep(timeToNextSleepMicroseconds);
 }
 
-// the loop function runs over and over again forever
 void loop() {
     // Nothing to see here - the code goes into deep sleep at the end of setup().
 }
