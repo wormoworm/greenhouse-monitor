@@ -25,7 +25,7 @@ boolean _3 = CONFIG_WIFI_SUBNET.fromString("255.255.252.0");
 #define CONFIG_MQTT_KEEP_ALIVE 10
 
 // Normal between data publications to MQTT.
-#define SAMPLING_INTERVAL_S 30
+#define SAMPLING_INTERVAL_S 120
 // Minimum between data publications to MQTT.
 #define MIN_SAMPLING_INTERVAL_S 1
 const unsigned long samplingIntervalMicroseconds = SAMPLING_INTERVAL_S * 1000000;
@@ -33,6 +33,8 @@ const unsigned long minSamplingIntervalMicroseconds = MIN_SAMPLING_INTERVAL_S * 
 
 // MQTT topics.
 #define TOPIC_BASE "sensors/environment/" CONFIG_MQTT_CLIENT_ID
-#define TOPIC_DATA TOPIC_BASE "/data"
+#define TOPIC_AIR TOPIC_BASE "/air"
+#define TOPIC_SOIL_CHANNEL_1 TOPIC_BASE "/soil_channel_1"
+#define TOPIC_SOIL_CHANNEL_2 TOPIC_BASE "/soil_channel_2"
 
 #endif
