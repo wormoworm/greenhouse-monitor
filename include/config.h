@@ -5,18 +5,14 @@
 #define PIN_WAKEUP 0
 #define PIN_LED 2
 
-// I2C address of the bme280 sensor.
+// I2C sensor addresses.
 #define ADDRESS_BME280 0x76
+#define ADDRESS_SOIL_SENSOR_1 0x36
+// #define ADDRESS_SOIL_SENSOR_1 0x37
 
-// For static IP configuration on local LAN.
-// #define CONFIG_WIFI_IP_ADDRESS_STRING "10.0.1.80"
-// #define CONFIG_WIFI_GATEWAY_STRING "10.0.0.1"
-// #define CONFIG_WIFI_SUBNET_STRING "255.255.252.0"
-
-IPAddress CONFIG_WIFI_IP_ADDRESS, CONFIG_WIFI_GATEWAY, CONFIG_WIFI_SUBNET;
-boolean _1 = CONFIG_WIFI_IP_ADDRESS.fromString("10.0.1.80");
-boolean _2 = CONFIG_WIFI_GATEWAY.fromString("10.0.0.1");
-boolean _3 = CONFIG_WIFI_SUBNET.fromString("255.255.252.0");
+// Smoothing config for soil sensors.
+#define SOIL_SENSOR_SAMPLES 20
+#define SOIL_SENSOR_SAMPLING_INTERVAL 50
 
 // For MQTT broker connection.
 #define CONFIG_MQTT_BROKER_ADDRESS "10.0.1.2"
@@ -25,7 +21,7 @@ boolean _3 = CONFIG_WIFI_SUBNET.fromString("255.255.252.0");
 #define CONFIG_MQTT_KEEP_ALIVE 10
 
 // Normal between data publications to MQTT.
-#define SAMPLING_INTERVAL_S 120
+#define SAMPLING_INTERVAL_S 60
 // Minimum between data publications to MQTT.
 #define MIN_SAMPLING_INTERVAL_S 1
 const unsigned long samplingIntervalMicroseconds = SAMPLING_INTERVAL_S * 1000000;

@@ -10,18 +10,18 @@
 #include "config.h"
 #include <SensorToolkitMathUtils.h>
 #include <Adafruit_seesaw.h>
+#include "SoilSensorClient.h"
 
 WiFiClient espClient;
 SensorToolkitWifi *wifiClient;
 SensorToolkitMqtt mqttClient = SensorToolkitMqtt(espClient, CONFIG_MQTT_BROKER_ADDRESS, CONFIG_MQTT_BROKER_PORT, CONFIG_MQTT_CLIENT_ID);
 
 Adafruit_BME280 bme280;
-Adafruit_seesaw seesawCh1, seesawCh2;
+SoilSensorClient soilChannel1 = SoilSensorClient(ADDRESS_SOIL_SENSOR_1, mqttClient, TOPIC_SOIL_CHANNEL_1);
+// SoilSensorClient soilChannel2 = SoilSensorClient(ADDRESS_SOIL_SENSOR_2, mqttClient, TOPIC_SOIL_CHANNEL_2);
 char jsonOutput[200];
 
 bool bme280Connected = false;
-bool seesawChannel1Connected = false;
-bool seesawChannel2Connected = false;
 
 // Forward function declarations
  void setupWifi();
@@ -46,7 +46,6 @@ void setup() {
   // Setup Wi-Fi.
     wifiClient = new SensorToolkitWifi();
     // wifiClient->setConnectionTickCallback(wifiConnectionTickCallback);
-    // wifiClient->setIpConfig(CONFIG_WIFI_IP_ADDRESS, CONFIG_WIFI_GATEWAY, CONFIG_WIFI_SUBNET);
     if (wifiClient->connectToWifi(WIFI_SSID, WIFI_PASSWORD, true)) {
         // mqttClient.setCallback(mqttSubscriptionCallback);
         mqttClient.connect(MQTT_USERNAME, MQTT_PASSWORD, CONFIG_MQTT_KEEP_ALIVE);
@@ -69,19 +68,6 @@ void setup() {
   else {
     timeToNextSleepMicroseconds = minSamplingIntervalMicroseconds;
   }
-
-//   Serial.println();
-//   Serial.print("Base sampling interval: ");
-//   Serial.println(samplingIntervalMicroseconds);
-  
-//   Serial.println();
-//   Serial.print("Sample duration micros: ");
-//   Serial.println(sampleDurationMs * 1000);
-  
-//   Serial.println();
-//   Serial.print("Time to next sleep micros: ");
-//   Serial.println(timeToNextSleepMicroseconds);
-  
   ESP.deepSleep(timeToNextSleepMicroseconds);
 }
 
@@ -90,7 +76,7 @@ void loop() {
 }
 
 void initialiseSensors() {
-    if (bme280.begin(0x76)) {
+    if (bme280.begin(ADDRESS_BME280)) {
         Serial.print("Connected to BME280 sensor with ID 0x");
         Serial.println(bme280.sensorID(), 16);
         bme280Connected = true;
@@ -99,29 +85,12 @@ void initialiseSensors() {
         Serial.println("Could not connect to BME280 sensor, check wiring, address, sensor ID!");
         // while (1) delay(10);
     }
-    if (seesawCh1.begin(0x36)) {
-        Serial.print("Connected to seesaw soil sensor with version ");
-        Serial.print(seesawCh1.getVersion());
-        seesawChannel1Connected = true;
+    if (!soilChannel1.connect()) {
+        Serial.println("Could not connect to soil sensor channel 1, check wiring, address, sensor ID!");
     }
-    else {
-        Serial.println("Could not connect to seesaw channel 1, check wiring, address, sensor ID!");
-        // while (1) delay(10);
-    }
-}
-
-void readSoilSensorAndPublish(Adafruit_seesaw soilSensor, const char *topic) {
-    double temperature = roundDouble(soilSensor.getTemp(), 1);
-    uint16_t capacitance = soilSensor.touchRead(0);
-    
-    StaticJsonDocument<200> json;
-    json["temperature"] = temperature;
-    json["capacitance"] = capacitance;
-
-    serializeJson(json, jsonOutput);        
-    mqttClient.publish(topic, jsonOutput);
-    
-    serializeJsonPretty(json, Serial);
+    // if (!soilChannel2.connect()) {
+    //     Serial.println("Could not connect to soil sensor channel 1, check wiring, address, sensor ID!");
+    // }
 }
 
 void readSensorsAndPublish() {
@@ -141,11 +110,6 @@ void readSensorsAndPublish() {
         serializeJsonPretty(json, Serial);
     }
 
-    if (seesawChannel1Connected){
-        readSoilSensorAndPublish(seesawCh1, TOPIC_SOIL_CHANNEL_1);
-    }
-
-    if (seesawChannel2Connected){
-        readSoilSensorAndPublish(seesawCh2, TOPIC_SOIL_CHANNEL_2);
-    }
+    soilChannel1.sampleAndPublish();
+    // soilChannel2.sampleAndPublish();
 }
