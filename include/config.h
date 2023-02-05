@@ -1,6 +1,10 @@
 #ifndef config_H
 #define config_H
 
+// Basic info, used for logging.
+#define PROJECT_NAME "Greenhouse monitor"
+#define PROJECT_URL "https://github.com/wormoworm/greenhouse-monitor"
+
 // Pins.
 #define PIN_WAKEUP 0
 #define PIN_LED 2
@@ -29,6 +33,7 @@ const unsigned long minSamplingIntervalMicroseconds = MIN_SAMPLING_INTERVAL_S * 
 
 // MQTT topics.
 #define TOPIC_BASE "sensors/environment/" CONFIG_MQTT_CLIENT_ID
+#define TOPIC_LOG TOPIC_BASE "/log"
 #define TOPIC_AIR TOPIC_BASE "/air"
 #define TOPIC_SOIL_CHANNEL_1 TOPIC_BASE "/soil_channel_1"
 #define TOPIC_SOIL_CHANNEL_2 TOPIC_BASE "/soil_channel_2"
