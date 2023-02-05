@@ -17,7 +17,7 @@
 // For MQTT broker connection.
 #define CONFIG_MQTT_BROKER_ADDRESS "10.0.1.2"
 #define CONFIG_MQTT_BROKER_PORT 8884
-#define CONFIG_MQTT_CLIENT_ID "greenhouse"
+#define CONFIG_MQTT_CLIENT_ID "garage"
 #define CONFIG_MQTT_KEEP_ALIVE 10
 
 // Normal between data publications to MQTT.

@@ -16,8 +16,6 @@ boolean SoilSensorClient::connect() {
         _isConnected = true;
     }
     else {
-        Serial.println("Could not connect to seesaw channel 1, check wiring, address, sensor ID!");
-        // while (1) delay(10);
         _isConnected = false;
     }
     return _isConnected;
